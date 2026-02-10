@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Weather Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            margin: 20px;
+        }
+        .left-panel {
+            background-color: #4a90e2;
+            color: white;
+            padding: 20px;
+            width: 200px;
+            min-height: 500px;
+        }
+        .right-panel {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            margin-left: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            padding: 5px;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        .city-item {
+            margin-bottom: 10px;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+        /* Added style for city links */
+        .city-item a {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .city-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Personal Weather Portal</h1>
+    </div>
+    
+    <div class="container">
+        <div class="left-panel">
+            <h2>Registered Cities</h2>
+            <div id="cityList"></div>
+        </div>
+        
+        <div class="right-panel">
+            <h2>Register City</h2>
+            
+            <div class="form-group">
+                <label for="cityName">City Name:</label>
+                <input type="text" id="cityName">
+                <div id="cityNameError" class="error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Year:</label>
+                <input type="text" id="year">
+            </div>
+            
+            <!-- Assignment1 TODO: Add Month input field -->
+            <div class="form-group">
+                <label>Month:</label>
+                <input type="text" id="month">
+                <div id="monthError" class="error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Weather Parameters:</label>
+                <div>
+                    <input type="checkbox" id="maxTemp" value="Max Temperature">
+                    <label for="maxTemp" style="display: inline;">Max Temperature</label>
+                </div>
+                
+                <!-- Assignment1 TODO: Add Min Temperature checkbox -->
+                <div>
+                    <input type="checkbox" id="minTemp" value="Min Temperature">
+                    <label for="minTemp" style="display: inline;">Min Temperature</label>
+                </div>
+                
+                <!-- Assignment1 TODO: Add Precipitation checkbox -->
+                <div>
+                    <input type="checkbox" id="precipitation" value="Precipitation">
+                    <label for="precipitation" style="display: inline;">Precipitation</label>
+                </div>
+                
+                <!-- Assignment1 TODO: Add Snow checkbox -->
+                <div>
+                    <input type="checkbox" id="snow" value="Snow">
+                    <label for="snow" style="display: inline;">Snow</label>
+                </div>
+                
+                <div id="paramsError" class="error"></div>
+            </div>
+            
+            <button onclick="registerCity()">Submit</button>
+        </div>
+    </div>
+    
+    <script>
+        let cities = [];
+        
+        function registerCity() {
+            // Clear previous errors
+            document.getElementById('cityNameError').textContent = '';
+            document.getElementById('paramsError').textContent = '';
+            
+            // Get values
+            let cityName = document.getElementById('cityName').value;
+            let year = document.getElementById('year').value;
+            
+            // Assignment1 TODO: Get month value
+            let month = document.getElementById('month').value;
+            document.getElementById('monthError').textContent = '';
+            
+            // Get weather parameters
+            let maxTemp = document.getElementById('maxTemp');
+            
+            // Assignment1 TODO: Get other weather parameter checkboxes
+            let minTemp = document.getElementById('minTemp');
+            let precipitation = document.getElementById('precipitation');
+            let snow = document.getElementById('snow');
+            
+            let hasError = false;
+            
+            // Assignment1 TODO: Validate city name (not empty or only spaces)
+            if (!cityName || cityName.trim() === '') {
+                document.getElementById('cityNameError').textContent = 'City name cannot be empty';
+                hasError = true;
+            }
+            
+            // Assignment1 TODO: Validate month (2 digit number between 01 and 12)
+            let monthNum = parseInt(month);
+            if (!month || month.length !== 2 || isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+                document.getElementById('monthError').textContent = 'Month must be a 2-digit number between 01 and 12';
+                hasError = true;
+            }
+            
+            // Assignment1 TODO: Validate at least one weather parameter is selected
+            if (!maxTemp.checked && !minTemp.checked && !precipitation.checked && !snow.checked) {
+                document.getElementById('paramsError').textContent = 'At least one weather parameter must be selected';
+                hasError = true;
+            }
+            
+            // If validation fails, stop
+            if (hasError) {
+                return;
+            }
+            
+            // Collect selected parameters
+            let selectedParams = [];
+            if (maxTemp.checked) {
+                selectedParams.push(maxTemp.value);
+            }
+            
+            // Assignment1 TODO: Add other checked parameters to selectedParams array
+            if (minTemp.checked) {
+                selectedParams.push(minTemp.value);
+            }
+            if (precipitation.checked) {
+                selectedParams.push(precipitation.value);
+            }
+            if (snow.checked) {
+                selectedParams.push(snow.value);
+            }
+            
+            // Create city object
+            let city = {
+                name: cityName.trim(),
+                year: year,
+                month: month,
+                parameters: selectedParams
+            };
+            
+            cities.push(city);
+            
+            // Assignment1 TODO: Add city to left panel as anchor element (not label)
+            // The starter code below adds as label - you need to change it to anchor
+            let cityList = document.getElementById('cityList');
+            let cityDiv = document.createElement('div');
+            cityDiv.className = 'city-item';
+            let cityAnchor = document.createElement('a');
+            cityAnchor.textContent = city.name;
+            cityAnchor.href = '#';
+            cityAnchor.onclick = function(e) {
+                e.preventDefault();
+                showCityDetails(cities.length - 1);
+            };
+            cityDiv.appendChild(cityAnchor);
+            cityList.appendChild(cityDiv);
+            
+            // Clear form
+            document.getElementById('cityName').value = '';
+            document.getElementById('year').value = '';
+            document.getElementById('month').value = '';
+            maxTemp.checked = false;
+            
+            // Assignment1 TODO: Uncheck other weather parameters
+            minTemp.checked = false;
+            precipitation.checked = false;
+            snow.checked = false;
+        }
+        
+        // Assignment1 TODO: Add function to show city details when anchor is clicked
+        // Should show alert with: City Name, Year, Month, and comma-separated parameters
+        function showCityDetails(index) {
+            let city = cities[index];
+            let message = 'City Name: ' + city.name + '\n' +
+                         'Year: ' + city.year + '\n' +
+                         'Month: ' + city.month + '\n' +
+                         'Weather Parameters: ' + city.parameters.join(', ');
+            alert(message);
+        }
+    </script>
+</body>
+</html>
